@@ -32,5 +32,21 @@
         <members>*</members>
         <name>StaticResource</name>
     </types>
+    <types>
+        <members>Clinical_Report__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>MedSync_Clinical_Portal_User</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>MedSync_Clinical_Portal</members>
+        <name>CustomSite</name>
+    </types>
+    <types>
+        <members>MedSync_Clinical_Portal</members>
+        <name>Network</name>
+    </types>
     <version>67.0</version>
 </Package>

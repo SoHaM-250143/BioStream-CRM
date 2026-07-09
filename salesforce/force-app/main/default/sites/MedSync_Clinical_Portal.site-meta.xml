@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomSite xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowHomePageRegistration>false</allowHomePageRegistration>
+    <allowStandardAnswersPages>false</allowStandardAnswersPages>
+    <allowStandardIdeasPages>false</allowStandardIdeasPages>
+    <allowStandardLookups>false</allowStandardLookups>
+    <allowStandardPortalPages>true</allowStandardPortalPages>
+    <allowStandardSearch>false</allowStandardSearch>
+    <authorizationRequiredPage>CommunitiesLogin</authorizationRequiredPage>
+    <bandwidthLimitExceededPage>BandwidthLimitExceeded</bandwidthLimitExceededPage>
+    <browserSupportPage>DefaultNoBrowserSupport</browserSupportPage>
+    <clickjackProtectionLevel>SameOriginOnly</clickjackProtectionLevel>
+    <description>MedSync AI Clinical Portal for external clinics to submit patient data.</description>
+    <fileNotFoundPage>FileNotFound</fileNotFoundPage>
+    <genericErrorPage>GenericErrorPage</genericErrorPage>
+    <inMaintenancePage>InMaintenance</inMaintenancePage>
+    <inactiveIndexPage>InMaintenance</inactiveIndexPage>
+    <indexPage>CommunitiesLanding</indexPage>
+    <masterLabel>MedSync Clinical Portal</masterLabel>
+    <requireHttps>true</requireHttps>
+    <requireInsecurePortalAccess>false</requireInsecurePortalAccess>
+    <siteType>ChatterNetwork</siteType>
+    <urlPathPrefix>medsync</urlPathPrefix>
+</CustomSite>

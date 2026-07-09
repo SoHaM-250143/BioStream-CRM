@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Network xmlns="http://soap.sforce.com/2006/04/metadata">
+    <allowInternalUserLogin>true</allowInternalUserLogin>
+    <allowMembersToFlag>false</allowMembersToFlag>
+    <disableReputationRecordConversations>false</disableReputationRecordConversations>
+    <emailSenderAddress>portal-admin@medsync.ai</emailSenderAddress>
+    <emailSenderName>MedSync AI Admin</emailSenderName>
+    <enableCustomEmailTemplates>false</enableCustomEmailTemplates>
+    <enableInvitation>false</enableInvitation>
+    <enableKnowledgeable>false</enableKnowledgeable>
+    <enableMemberVisibility>false</enableMemberVisibility>
+    <enableNicknameDisplay>false</enableNicknameDisplay>
+    <enablePrivateMessages>false</enablePrivateMessages>
+    <enableReputation>false</enableReputation>
+    <enableShowAllNetworkSettings>false</enableShowAllNetworkSettings>
+    <enableSiteAsContainer>true</enableSiteAsContainer>
+    <enableTalkingAboutStats>false</enableTalkingAboutStats>
+    <navigationLinkSet>
+        <navigationMenuItem>
+            <label>Home</label>
+            <position>1</position>
+            <publiclyAvailable>true</publiclyAvailable>
+            <target>Showcase_Home</target>
+            <type>Event</type>
+        </navigationMenuItem>
+    </navigationLinkSet>
+    <networkMemberGroups>
+        <profile>Customer Community User</profile>
+        <profile>Partner Community User</profile>
+    </networkMemberGroups>
+    <selfRegistration>true</selfRegistration>
+    <sendWelcomeEmail>true</sendWelcomeEmail>
+    <status>Live</status>
+</Network>
