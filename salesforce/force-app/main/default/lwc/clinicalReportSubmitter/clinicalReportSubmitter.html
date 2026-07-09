@@ -1,0 +1,109 @@
+<template>
+    <lightning-card title="MedSync AI - Clinical Data Exchange" icon-name="custom:custom94" class="premium-card">
+        <div class="slds-var-m-around_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-is-relative spinner-container">
+                    <lightning-spinner alternative-text="Analyzing clinical data..." size="medium" variant="brand"></lightning-spinner>
+                    <div class="spinner-message slds-text-align_center slds-var-m-top_large">
+                        <p class="slds-text-heading_small">{loadingMessage}</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Submission Form -->
+            <template if:false={isSubmitted}>
+                <div class="input-form">
+                    <div class="slds-var-m-bottom_medium">
+                        <lightning-input label="Patient Name" value={patientName} onchange={handlePatientChange} required></lightning-input>
+                    </div>
+                    <div class="slds-var-m-bottom_medium">
+                        <lightning-input label="Clinic Name" value={clinicName} onchange={handleClinicChange}></lightning-input>
+                    </div>
+                    <div class="slds-var-m-bottom_medium">
+                        <lightning-textarea label="Clinical Report Notes" value={reportText} onchange={handleReportChange} required class="large-textarea" placeholder="Paste unstructured medical text notes here..."></lightning-textarea>
+                    </div>
+                    <div class="slds-var-m-top_medium">
+                        <button class="submit-button" onclick={handleSubmit}>
+                            Submit to MedSync AI
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Results Dashboard -->
+            <template if:true={isSubmitted}>
+                <template if:false={isLoading}>
+                    <div class="results-dashboard">
+                        <!-- Header Status Card -->
+                        <div class="status-header">
+                            <span class="status-label">Status:</span>
+                            <span class={statusBadgeClass}>{reportStatus}</span>
+                        </div>
+
+                        <!-- Anomaly Warning Banner -->
+                        <template if:true={anomalyDetected}>
+                            <div class="anomaly-banner">
+                                <div class="anomaly-icon">⚠️</div>
+                                <div class="anomaly-details">
+                                    <h3 class="anomaly-title">Clinical Anomaly Detected</h3>
+                                    <p class="anomaly-text">{anomalyDescription}</p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Entities Breakdown -->
+                        <div class="entity-section">
+                            <h3 class="section-title">Extracted Clinical Entities (BioBERT)</h3>
+                            
+                            <!-- Diseases -->
+                            <div class="entity-category">
+                                <span class="category-name diseases-category">Diseases & Conditions</span>
+                                <div class="badge-container">
+                                    <template for:each={diseases} for:item="disease">
+                                        <span key={disease} class="badge disease-badge">{disease}</span>
+                                    </template>
+                                    <template if:false={hasDiseases}>
+                                        <span class="no-entities">None identified.</span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Chemicals -->
+                            <div class="entity-category">
+                                <span class="category-name chemicals-category">Therapeutics & Chemicals</span>
+                                <div class="badge-container">
+                                    <template for:each={chemicals} for:item="chemical">
+                                        <span key={chemical} class="badge chemical-badge">{chemical}</span>
+                                    </template>
+                                    <template if:false={hasChemicals}>
+                                        <span class="no-entities">None identified.</span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Anatomy -->
+                            <div class="entity-category">
+                                <span class="category-name anatomy-category">Anatomical Regions</span>
+                                <div class="badge-container">
+                                    <template for:each={anatomy} for:item="anat">
+                                        <span key={anat} class="badge anatomy-badge">{anat}</span>
+                                    </template>
+                                    <template if:false={hasAnatomy}>
+                                        <span class="no-entities">None identified.</span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-var-m-top_large">
+                            <button class="secondary-button" onclick={handleReset}>
+                                Submit Another Report
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

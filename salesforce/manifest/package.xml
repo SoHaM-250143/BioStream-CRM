@@ -48,5 +48,9 @@
         <members>MedSync_Clinical_Portal</members>
         <name>Network</name>
     </types>
+    <types>
+        <members>MedSyncMiddleware</members>
+        <name>RemoteSiteSetting</name>
+    </types>
     <version>67.0</version>
 </Package>
