@@ -23,15 +23,113 @@
     background: var(--bg-card);
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.premium-card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+.layout-container {
+    min-height: 500px;
+}
+
+/* Sidebar Section */
+.sidebar {
+    background: #f9fafb;
+    border-right: 1px solid var(--border-color);
+    max-height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.sidebar-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.report-list {
+    list-style: none;
+    padding: 0.75rem;
+    margin: 0;
+}
+
+.report-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.report-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.active-item {
+    border-left: 4px solid #4f46e5 !important;
+    background: #f5f3ff !important;
+    border-color: #c084fc !important;
+}
+
+.report-list-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.report-list-patient {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.report-list-clinic {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+}
+
+.report-item-status {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    letter-spacing: 0.02em;
+}
+
+.status-badge-success { background: #d1fae5; color: #065f46; }
+.status-badge-processing { background: #eff6ff; color: #1d4ed8; animation: pulse 1.5s infinite; }
+.status-badge-error { background: #fee2e2; color: #991b1b; }
+.status-badge-new { background: #f3f4f6; color: #374151; }
+
+.no-reports {
+    padding: 2rem;
+    text-align: center;
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Main Area Section */
+.main-content {
+    background: #ffffff;
 }
 
 .input-form, .results-dashboard {
-    max-width: 650px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 1rem 0;
 }
@@ -58,10 +156,6 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.35);
     filter: brightness(1.1);
-}
-
-.submit-button:active {
-    transform: translateY(0);
 }
 
 .secondary-button {
@@ -123,26 +217,10 @@
     letter-spacing: 0.05em;
 }
 
-.status-new {
-    background: #f3f4f6;
-    color: #4b5563;
-}
-
-.status-processing {
-    background: #eff6ff;
-    color: #2563eb;
-    animation: pulse 1.5s infinite;
-}
-
-.status-analyzed {
-    background: #ecfdf5;
-    color: #059669;
-}
-
-.status-error {
-    background: #fef2f2;
-    color: #dc2626;
-}
+.status-new { background: #f3f4f6; color: #4b5563; }
+.status-processing { background: #eff6ff; color: #2563eb; animation: pulse 1.5s infinite; }
+.status-analyzed { background: #ecfdf5; color: #059669; }
+.status-error { background: #fef2f2; color: #dc2626; }
 
 /* Anomaly Alert Banner */
 .anomaly-banner {
@@ -230,20 +308,9 @@
     transform: scale(1.05);
 }
 
-.disease-badge {
-    background: var(--badge-disease);
-    color: var(--text-disease);
-}
-
-.chemical-badge {
-    background: var(--badge-chemical);
-    color: var(--text-chemical);
-}
-
-.anatomy-badge {
-    background: var(--badge-anatomy);
-    color: var(--text-anatomy);
-}
+.disease-badge { background: var(--badge-disease); color: var(--text-disease); }
+.chemical-badge { background: var(--badge-chemical); color: var(--text-chemical); }
+.anatomy-badge { background: var(--badge-anatomy); color: var(--text-anatomy); }
 
 .no-entities {
     font-size: 0.85rem;

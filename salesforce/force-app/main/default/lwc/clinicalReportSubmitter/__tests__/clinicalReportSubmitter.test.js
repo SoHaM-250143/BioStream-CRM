@@ -1,9 +1,15 @@
 import { createElement } from 'lwc';
+import { registerApexTestWireAdapter } from '@salesforce/sfdx-lwc-jest';
 import ClinicalReportSubmitter from 'c/clinicalReportSubmitter';
 import { createRecord, getRecord } from 'lightning/uiRecordApi';
+import getRecentReports from '@salesforce/apex/ClinicalReportController.getRecentReports';
+
+// Register Apex mock wire adapter
+const getRecentReportsAdapter = registerApexTestWireAdapter(getRecentReports);
 
 // Setup default mock values for createRecord
 createRecord.mockResolvedValue({ id: 'a001a00000abcde' });
+
 
 
 describe('c-clinical-report-submitter', () => {
@@ -127,4 +133,36 @@ describe('c-clinical-report-submitter', () => {
         expect(anatomyBadges.length).toBe(1);
         expect(anatomyBadges[0].textContent).toBe('heart');
     });
+
+    it('renders recent submissions in the sidebar and loads a clicked report', async () => {
+        const element = createElement('c-clinical-report-submitter', {
+            is: ClinicalReportSubmitter
+        });
+        document.body.appendChild(element);
+
+        // Mock recent reports list returned by Apex wire
+        const mockReports = [
+            { Id: 'a001a00000abc01', Patient_Name__c: 'Alice Smith', Clinic_Name__c: 'West Clinic', Status__c: 'Analyzed' },
+            { Id: 'a001a00000abc02', Patient_Name__c: 'Bob Jones', Clinic_Name__c: 'East Clinic', Status__c: 'New' }
+        ];
+        
+        // Emit list via wired Apex adapter
+        getRecentReportsAdapter.emit(mockReports);
+
+
+        // Resolve JS queue to update elements in the DOM
+        await Promise.resolve();
+
+        // Verify sidebar items render
+        const reportItems = element.shadowRoot.querySelectorAll('.report-item');
+        expect(reportItems.length).toBe(2);
+        expect(reportItems[0].querySelector('.report-list-patient').textContent).toBe('Alice Smith');
+
+        // Click the first item
+        reportItems[0].click();
+
+        // Verify recordId is updated to the clicked report ID
+        expect(element.recordId).toBe('a001a00000abc01');
+    });
 });
+

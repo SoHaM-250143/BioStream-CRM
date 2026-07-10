@@ -1,6 +1,8 @@
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, track, wire, api } from 'lwc';
 import { createRecord, getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { refreshApex } from '@salesforce/apex';
+import getRecentReports from '@salesforce/apex/ClinicalReportController.getRecentReports';
 
 const OBJECT_NAME = 'Clinical_Report__c';
 
@@ -17,7 +19,7 @@ export default class ClinicalReportSubmitter extends LightningElement {
     @track clinicName = '';
     @track reportText = '';
     
-    @track recordId;
+    @api recordId;
     @track isSubmitted = false;
     @track isLoading = false;
     @track loadingMessage = 'Submitting report...';
@@ -27,6 +29,54 @@ export default class ClinicalReportSubmitter extends LightningElement {
     @track extractedEntities = {};
     @track anomalyDetected = false;
     @track anomalyDescription = '';
+
+    // Wired data results
+    wiredReportsResult;
+    @track rawRecentReports = [];
+
+    // Wire to retrieve list of recent reports
+    @wire(getRecentReports)
+    wiredGetRecentReports(result) {
+        this.wiredReportsResult = result;
+        if (result.data) {
+            this.rawRecentReports = result.data;
+        } else if (result.error) {
+            console.error('Error fetching recent reports:', result.error);
+        }
+    }
+
+    // Processed reports with classes for template bindings
+    get recentReports() {
+        return this.rawRecentReports.map(rep => {
+            let itemClass = 'report-item slds-var-p-around_small slds-var-m-bottom_x-small ';
+            if (this.recordId === rep.Id) {
+                itemClass += 'active-item';
+            }
+            
+            let statusClass = 'report-item-status ';
+            if (rep.Status__c === 'Analyzed') statusClass += 'status-badge-success';
+            else if (rep.Status__c === 'Processing') statusClass += 'status-badge-processing';
+            else if (rep.Status__c === 'Error') statusClass += 'status-badge-error';
+            else statusClass += 'status-badge-new';
+
+            return {
+                ...rep,
+                itemClass,
+                statusClass
+            };
+        });
+    }
+
+    get hasRecentReports() {
+        return this.rawRecentReports.length > 0;
+    }
+
+    handleSelectReport(event) {
+        const selectedId = event.currentTarget.dataset.id;
+        this.recordId = selectedId;
+        this.isSubmitted = true;
+        this.isLoading = false; // Hide form loading states
+    }
 
     handlePatientChange(event) {
         this.patientName = event.target.value;
@@ -40,7 +90,7 @@ export default class ClinicalReportSubmitter extends LightningElement {
         this.reportText = event.target.value;
     }
 
-    // Wire handler to react to real-time database updates from Node.js middleware
+    // Wire handler to react to database updates
     @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
     wiredRecord({ error, data }) {
         if (data) {
@@ -55,17 +105,18 @@ export default class ClinicalReportSubmitter extends LightningElement {
                 } catch (e) {
                     console.error('Error parsing entities JSON:', e);
                 }
+            } else {
+                this.extractedEntities = {};
             }
 
             // Manage loading states based on processing status
             if (this.reportStatus === 'Processing') {
                 this.isLoading = true;
                 this.loadingMessage = 'BioBERT analyzing medical text report...';
-            } else if (this.reportStatus === 'Analyzed') {
+            } else if (this.reportStatus === 'Analyzed' || this.reportStatus === 'Error') {
                 this.isLoading = false;
-            } else if (this.reportStatus === 'Error') {
-                this.isLoading = false;
-                this.showToast('Error', 'BioBERT text analysis failed. Please verify the report formatting.', 'error');
+                // Whenever state resolves, refresh the sidebar to update status list
+                refreshApex(this.wiredReportsResult);
             }
         } else if (error) {
             console.error('Error fetching record:', error);
@@ -99,6 +150,9 @@ export default class ClinicalReportSubmitter extends LightningElement {
             
             // Set status message
             this.loadingMessage = 'Triggering BioBERT API Gateway...';
+            
+            // Refresh history list immediately
+            refreshApex(this.wiredReportsResult);
         } catch (error) {
             this.isSubmitted = false;
             this.isLoading = false;
@@ -117,6 +171,7 @@ export default class ClinicalReportSubmitter extends LightningElement {
         this.extractedEntities = {};
         this.anomalyDetected = false;
         this.anomalyDescription = '';
+        refreshApex(this.wiredReportsResult);
     }
 
     // Getters for template logic
