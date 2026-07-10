@@ -5,6 +5,13 @@
             <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 sidebar">
                 <div class="sidebar-header">
                     <h3>Recent Submissions</h3>
+                    <lightning-input 
+                        type="search" 
+                        variant="label-hidden" 
+                        placeholder="Search patients..." 
+                        onchange={handleSearchChange}
+                        class="search-bar slds-var-m-top_x-small">
+                    </lightning-input>
                 </div>
                 <ul class="report-list">
                     <template for:each={recentReports} for:item="rep">
@@ -39,10 +46,10 @@
                     <template if:false={isSubmitted}>
                         <div class="input-form">
                             <div class="slds-var-m-bottom_medium">
-                                <lightning-input label="Patient Name" value={patientName} onchange={handlePatientChange} required></lightning-input>
+                                <lightning-input label="Patient Name" value={patientName} onchange={handlePatientChange} required class="patient-input"></lightning-input>
                             </div>
                             <div class="slds-var-m-bottom_medium">
-                                <lightning-input label="Clinic Name" value={clinicName} onchange={handleClinicChange}></lightning-input>
+                                <lightning-input label="Clinic Name" value={clinicName} onchange={handleClinicChange} class="clinic-input"></lightning-input>
                             </div>
                             <div class="slds-var-m-bottom_medium">
                                 <lightning-textarea label="Clinical Report Notes" value={reportText} onchange={handleReportChange} required class="large-textarea" placeholder="Paste unstructured medical text notes here..."></lightning-textarea>

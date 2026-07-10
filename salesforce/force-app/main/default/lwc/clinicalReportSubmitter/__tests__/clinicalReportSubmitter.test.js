@@ -29,7 +29,10 @@ describe('c-clinical-report-submitter', () => {
 
         // Verify input fields exist
         const inputs = element.shadowRoot.querySelectorAll('lightning-input');
-        expect(inputs.length).toBe(2);
+        expect(inputs.length).toBe(3); // Search bar + Patient Name + Clinic Name
+        
+        expect(element.shadowRoot.querySelector('.patient-input')).toBeTruthy();
+        expect(element.shadowRoot.querySelector('.clinic-input')).toBeTruthy();
         
         const textarea = element.shadowRoot.querySelector('lightning-textarea');
         expect(textarea).toBeTruthy();
@@ -46,13 +49,14 @@ describe('c-clinical-report-submitter', () => {
         });
         document.body.appendChild(element);
 
-        // Populate fields
-        const inputs = element.shadowRoot.querySelectorAll('lightning-input');
-        inputs[0].value = 'John Doe';
-        inputs[0].dispatchEvent(new CustomEvent('change'));
+        // Populate fields using class selectors
+        const patientInput = element.shadowRoot.querySelector('.patient-input');
+        patientInput.value = 'John Doe';
+        patientInput.dispatchEvent(new CustomEvent('change'));
 
-        inputs[1].value = 'City Clinic';
-        inputs[1].dispatchEvent(new CustomEvent('change'));
+        const clinicInput = element.shadowRoot.querySelector('.clinic-input');
+        clinicInput.value = 'City Clinic';
+        clinicInput.dispatchEvent(new CustomEvent('change'));
 
         const textarea = element.shadowRoot.querySelector('lightning-textarea');
         textarea.value = 'Unstructured clinical note describing chest discomfort and heart issues.';
@@ -76,12 +80,13 @@ describe('c-clinical-report-submitter', () => {
         document.body.appendChild(element);
 
         // Populate fields to allow submission
-        const inputs = element.shadowRoot.querySelectorAll('lightning-input');
-        inputs[0].value = 'Jane Doe';
-        inputs[0].dispatchEvent(new CustomEvent('change'));
+        const patientInput = element.shadowRoot.querySelector('.patient-input');
+        patientInput.value = 'Jane Doe';
+        patientInput.dispatchEvent(new CustomEvent('change'));
 
-        inputs[1].value = 'County Health';
-        inputs[1].dispatchEvent(new CustomEvent('change'));
+        const clinicInput = element.shadowRoot.querySelector('.clinic-input');
+        clinicInput.value = 'County Health';
+        clinicInput.dispatchEvent(new CustomEvent('change'));
 
         const textarea = element.shadowRoot.querySelector('lightning-textarea');
         textarea.value = 'Malignant tumor in the lung.';
@@ -163,6 +168,38 @@ describe('c-clinical-report-submitter', () => {
 
         // Verify recordId is updated to the clicked report ID
         expect(element.recordId).toBe('a001a00000abc01');
+    });
+
+    it('filters recent submissions in the sidebar based on search query', async () => {
+        const element = createElement('c-clinical-report-submitter', {
+            is: ClinicalReportSubmitter
+        });
+        document.body.appendChild(element);
+
+        // Mock recent reports list returned by Apex wire
+        const mockReports = [
+            { Id: 'a001a00000abc01', Patient_Name__c: 'Alice Smith', Clinic_Name__c: 'West Clinic', Status__c: 'Analyzed' },
+            { Id: 'a001a00000abc02', Patient_Name__c: 'Bob Jones', Clinic_Name__c: 'East Clinic', Status__c: 'New' }
+        ];
+        
+        // Emit list via wired Apex adapter
+        getRecentReportsAdapter.emit(mockReports);
+        await Promise.resolve();
+
+        // Verify initial list has 2 items
+        let reportItems = element.shadowRoot.querySelectorAll('.report-item');
+        expect(reportItems.length).toBe(2);
+
+        // Perform search input
+        const searchInput = element.shadowRoot.querySelector('.search-bar');
+        searchInput.value = 'Alice';
+        searchInput.dispatchEvent(new CustomEvent('change'));
+        await Promise.resolve();
+
+        // Verify list is filtered to 1 item matching Alice
+        reportItems = element.shadowRoot.querySelectorAll('.report-item');
+        expect(reportItems.length).toBe(1);
+        expect(reportItems[0].querySelector('.report-list-patient').textContent).toBe('Alice Smith');
     });
 });
 

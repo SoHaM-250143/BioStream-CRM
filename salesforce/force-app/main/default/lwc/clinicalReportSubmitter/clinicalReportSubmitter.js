@@ -33,6 +33,7 @@ export default class ClinicalReportSubmitter extends LightningElement {
     // Wired data results
     wiredReportsResult;
     @track rawRecentReports = [];
+    @track searchKey = '';
 
     // Wire to retrieve list of recent reports
     @wire(getRecentReports)
@@ -47,7 +48,13 @@ export default class ClinicalReportSubmitter extends LightningElement {
 
     // Processed reports with classes for template bindings
     get recentReports() {
-        return this.rawRecentReports.map(rep => {
+        const filtered = this.rawRecentReports.filter(rep => {
+            const patient = (rep.Patient_Name__c || '').toLowerCase();
+            const clinic = (rep.Clinic_Name__c || '').toLowerCase();
+            return patient.includes(this.searchKey) || clinic.includes(this.searchKey);
+        });
+
+        return filtered.map(rep => {
             let itemClass = 'report-item slds-var-p-around_small slds-var-m-bottom_x-small ';
             if (this.recordId === rep.Id) {
                 itemClass += 'active-item';
@@ -69,6 +76,10 @@ export default class ClinicalReportSubmitter extends LightningElement {
 
     get hasRecentReports() {
         return this.rawRecentReports.length > 0;
+    }
+
+    handleSearchChange(event) {
+        this.searchKey = event.target.value.toLowerCase();
     }
 
     handleSelectReport(event) {
@@ -171,6 +182,7 @@ export default class ClinicalReportSubmitter extends LightningElement {
         this.extractedEntities = {};
         this.anomalyDetected = false;
         this.anomalyDescription = '';
+        this.searchKey = '';
         refreshApex(this.wiredReportsResult);
     }
 
